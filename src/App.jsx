@@ -1,6 +1,6 @@
 import GameHeader from "./components/GameHeader";
 import { Card } from "./components/Card";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { WinMessage } from "./components/WinMessage";
 
 const cardValues = [
@@ -12,6 +12,8 @@ const cardValues = [
   "🐦‍🔥",
   "🪸",
   "🐬",
+  "🌵",
+  "🏝️",
   "💐",
   "🦄",
   "🕊️",
@@ -20,6 +22,8 @@ const cardValues = [
   "🐦‍🔥",
   "🪸",
   "🐬",
+  "🌵",
+  "🏝️",
 ];
 
 function App() {
@@ -29,6 +33,13 @@ function App() {
   const [score, setScore] = useState(0);
   const [moves, setMoves] = useState(0);
   const [isLock, setIsLock] = useState(false);
+  const matchSoundRef = useRef(null);
+  const errorSoundRef = useRef(null);
+
+  useEffect(() => {
+    matchSoundRef.current = new Audio("./public/sounds/match.mp3");
+    errorSoundRef.current = new Audio("./public/sounds/error.mp3");
+  }, []);
 
   const suhffleArray = (array) => {
     const shuffled = [...array];
@@ -63,6 +74,13 @@ function App() {
     initializeGame();
   }, []);
 
+  const playSound = (soundRef) => {
+    if (soundRef.current) {
+      soundRef.current.currentTime = 0;
+      soundRef.current.play().catch(() => {});
+    }
+  };
+
   const handleCardClick = (card) => {
     // Don't allow the card clicking if card is already flipped
     if (
@@ -95,6 +113,7 @@ function App() {
       const firstCard = cards[flippedCards[0]];
 
       if (firstCard.value === card.value) {
+        playSound(matchSoundRef);
         setTimeout(() => {
           setMatchedCards((prev) => [...prev, firstCard.id, card.id]);
           setScore((prev) => prev + 1);
@@ -112,6 +131,7 @@ function App() {
         }, 500);
       } else {
         // flip back card1, card2
+        playSound(errorSoundRef);
         setTimeout(() => {
           const flippedBackCard = newCards.map((c) => {
             if (newFlippedCards.includes(c.id) || c.id === card.id) {
@@ -129,7 +149,7 @@ function App() {
     }
   };
 
-  const isGameComplete = matchedCards.length === cardValues.length
+  const isGameComplete = matchedCards.length === cardValues.length;
 
   return (
     <div className="app">
@@ -139,7 +159,7 @@ function App() {
 
       <div className="cards-grid">
         {cards.map((card) => (
-          <Card card={card} onClick={handleCardClick} />
+          <Card key={card.id} card={card} onClick={handleCardClick} />
         ))}
       </div>
     </div>
