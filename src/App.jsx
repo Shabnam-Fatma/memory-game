@@ -37,8 +37,8 @@ function App() {
   const errorSoundRef = useRef(null);
 
   useEffect(() => {
-    matchSoundRef.current = new Audio("./public/sounds/match.mp3");
-    errorSoundRef.current = new Audio("./public/sounds/error.mp3");
+    matchSoundRef.current = new Audio("/sounds/match.mp3");
+    errorSoundRef.current = new Audio("/sounds/error.mp3");
   }, []);
 
   const suhffleArray = (array) => {
@@ -143,7 +143,7 @@ function App() {
           setCards(flippedBackCard);
           setIsLock(false);
           setFlippedCards([]);
-        }, 1000);
+        }, 500);
       }
       setMoves((prev) => prev + 1);
     }
